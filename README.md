@@ -5,5 +5,5 @@ In this advanced course students will investigate current server based virtualiz
 
 ### Table of Contents:
 * Labs
-* Assignemnts
+* Assignments
 * Notes & Documentation
