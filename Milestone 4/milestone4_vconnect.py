@@ -19,6 +19,9 @@ vcenterAdmin = data['vcenter'][0]['vcenteradmin']
 # Session Token
 si=SmartConnect(host=vcenterHost, user=vcenterAdmin, pwd=passw, sslContext=s)
 
+# Importing Functions from Milestone 5
+from milestone5_functions import *
+
 # Function used to print out information/elements from the vcenter "aboutInfo" object
 def vCenterInfo(si):
   aboutInfo = si.content.about.fullName
