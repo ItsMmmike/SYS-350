@@ -19,6 +19,11 @@ vcenterAdmin = data['vcenter'][0]['vcenteradmin']
 # Session Token
 si=SmartConnect(host=vcenterHost, user=vcenterAdmin, pwd=passw, sslContext=s)
 
+# Function used to print out information/elements from the vcenter "aboutInfo" object
+def vCenterInfo(si):
+  aboutInfo = si.content.about.fullName
+  print("Current vCenter Version: "+aboutInfo)
+
 ### Demo Script Requirements:
 # 1. Read Vcenter Host + username from a file (vcenter-conf.json)
 
@@ -94,20 +99,27 @@ def menu():
   menuStatus = True
   while menuStatus == True:
     print("")
-    print("[1] - Display Session Info")
-    print("[2] - Search VMs")
-    print("[3] - Exit")
+    print("[1] - Display Vcenter Version")
+    print("[2] - Display Session Info")
+    print("[3] - Search VMs")
+    print("[4] - Exit")
     print("")
     selection = input("Please select an option from the menu above: ")
     
-    # Displays the info on the current Pyvmomi Session
+    # Displays the current vCenter Version
     if selection == "1":
+      print("")
+      vCenterInfo(si)
+      continue
+
+    # Displays the info on the current Pyvmomi Session
+    if selection == "2":
       print("")
       getSessionInfo(si)
       continue
 
     # Search function used to filter VMs by name, displays all VMs if no filter was provided
-    if selection == "2":
+    if selection == "3":
       # Asks for user input
       searchVM = input("Please input a vm name to search (Leave blank to view all VMs): ")
 
@@ -121,7 +133,7 @@ def menu():
         vmInfo(si, searchVM)
         continue
 
-    if selection == "3":
+    if selection == "4":
       print("Exiting Script")
       menuStatus = False
 
