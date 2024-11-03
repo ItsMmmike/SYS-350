@@ -1,4 +1,4 @@
-# Vconnect script adapted from:
+# Milestone 4 Vconnect script by Michael Ng, adapted from:
 # https://github.com/rtgillen/SYS350-FA24/
 
 import getpass
@@ -15,12 +15,12 @@ with open('./Milestone 4/vcenter-conf.json') as a:
   data = json.load(a)
 vcenterHost = data['vcenter'][0]['vcenterhost']
 vcenterAdmin = data['vcenter'][0]['vcenteradmin']
-
 # Session Token
 si=SmartConnect(host=vcenterHost, user=vcenterAdmin, pwd=passw, sslContext=s)
 
 # Importing Functions from Milestone 5
-from milestone5_functions import *
+import milestone5_functions
+m5 = milestone5_functions
 
 # Function used to print out information/elements from the vcenter "aboutInfo" object
 def vCenterInfo(si):
@@ -55,16 +55,14 @@ def getSessionInfo(si):
 # Sources:
 # https://www.ntpro.nl/blog/archives/3751-Mastering-vCenter-Operations-with-Python-A-Script-to-Manage-Your-VMs.html
 
-# Function retrives all available vm info from vcenter
-def vmData(si):
-  content = si.RetrieveContent()
-  container = content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True)
-  return container.view
-
 # Function used to search for a specifc VM based on user input query
 # >> If no search query is specified, function displays all VMs
 def vmInfo(si, search=None):
-  vms = vmData(si)
+
+  # Retrieves all available vm info from vcenter
+  content = si.RetrieveContent()
+  container = content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True)
+  vms = container.view
 
   # Check to see if search query is empty --> displays all VMs in that is the case
   if search == None:
@@ -78,6 +76,7 @@ def vmInfo(si, search=None):
       print("Power State: "+str(vm.runtime.powerState)) # Displays current system power state
       print("System Memory: "+str(vm.config.hardware.memoryMB)) # Displays number of sys memory in MB
       print("CPU Number: "+str(vm.config.hardware.numCPU)) # Displays number of sys CPU cores
+      print("IP Address: "+str(vm.guest.ipAddress)) # Displays current IP Address
   
   # Runs query search if there is a provided "search" term
   else:
@@ -92,6 +91,7 @@ def vmInfo(si, search=None):
         print("Power State: "+str(vm.runtime.powerState))
         print("System Memory: "+str(vm.config.hardware.memoryMB))
         print("CPU Number: "+str(vm.config.hardware.numCPU))
+        print("IP Address: "+str(vm.guest.ipAddress))
         break
     # Informs user if the VM cannot be found
     else:
@@ -105,7 +105,8 @@ def menu():
     print("[1] - Display Vcenter Version")
     print("[2] - Display Session Info")
     print("[3] - Search VMs")
-    print("[4] - Exit")
+    print("[4] - VM Operations")
+    print("[5] - Exit")
     print("")
     selection = input("Please select an option from the menu above: ")
     
@@ -137,6 +138,10 @@ def menu():
         continue
 
     if selection == "4":
+      m5.milestone5Menu()
+      continue
+
+    if selection == "5":
       print("Exiting Script")
       menuStatus = False
 
@@ -146,8 +151,27 @@ def menu():
       continue
 
 # Allows the Menu Script to run on startup
-if __name__ == "__main__":
-  menu()
+# if __name__ == "__main__":
+#   menu()
+
+### Testing
+# Test=m5.powerOffVM(si)
+
+test02=m5.selectVM(si)
+
+if str(test02) == 'False':
+  print("task did not complete")
+  pass
+else:
+  test02.PowerOffVM_Task()
+  print(type(test02))
+
+# Test out making this a string comparison if statement
+
+
 
 # 4. Expand functionality of part 3 to include metadata on VMs
 #    >> Already included in the "vmInfo" function (*See above for more info)
+
+
+# Also note to self: Shoutout to W3Schools.com --> Very useful resource for referencing how to use python code (am very rusty)
