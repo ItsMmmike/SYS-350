@@ -1,8 +1,8 @@
 # Milestone 5 Functions
 
-# Import functions from milestone 4
-from pyVim.connect import SmartConnect
+# Import pyvmomi + auth token from Milestone 4
 from pyVmomi import vim
+from pyVim.task import WaitForTask
 
 # Function retrives all available vm info from vcenter
 def vmData(si):
@@ -13,7 +13,6 @@ def vmData(si):
 # Function used to prompt users to select an available Vcenter VM
 #   - Returns VM Name if found, returns "False" if not
 def selectVM(si):
-
     # Retrieve VM Data
     vms = vmData(si)
     # Lists all available VMs
@@ -34,7 +33,7 @@ def selectVM(si):
         # Initial check for blank entry
         if search == None:
             print("No VM selected, please try again")
-            return 0 # Do we want to check if this route works?
+            return False # Do we want to check if this route works?
 
         # Return VM Name if match found
         if vm.name == search:
@@ -44,54 +43,176 @@ def selectVM(si):
     else:
         print("VM not found, please try again") 
         return False # Default response if function is unable to locate vm
-      
 
+
+# Function used to power off a selected VM
 def powerOffVM(si):
+    # Query list of vms available to clone
     vm = selectVM(si)
 
-    # Check to see if vm is already powered off
+    # Check if provided vm is valid
+    if str(vm) == 'False':
+        pass
+    else:
+        # Check to see if vm is already powered off
+        if str(vm.runtime.powerState) == "poweredOff":
+            print("VM already powered Off")
+            pass
+        # Powers off the selected vm
+        else:
+            vm.PowerOffVM_Task()
+            print(vm.name+" has been powered off")
 
-    if vm != False:
-        vm.PowerOffVM_Task()
-        print(str(vm.name)+" powering off")
 
-
+# Function used to power on a selected VM
 def powerOnVM(si):
-    # Query list of vms here
+    # Query list of vms available to clone
+    vm = selectVM(si)
 
-    # vm.PowerOnVM_Task()
-    print("hello world")
+    # Check if provided vm is valid
+    if str(vm) == 'False':
+        pass
+    else:
+        # Check to see if vm is already powered on
+        if str(vm.runtime.powerState) == "poweredOn":
+            print("VM already powered on")
+            pass
+        # Powers on the selected vm
+        else:
+            vm.PowerOnVM_Task()
+            print(vm.name+" has been powered on")
 
+
+# Function used to take a snapshot of a given VM
 def takeVMSnapshot(si):
-    # Query list of vms here
+    # Query list of vms available to clone
+    vm = selectVM(si)
 
-    # Ask user to provide a name for this snapshot
+    # Check if provided vm is valid
+    if str(vm) == 'False':
+        pass
+    else:
+        snapshotName = input("Please select a name for the new snapshot: ")
+        
+        # Catch if no name was provided
+        if snapshotName == "":
+            snapshotName = "snapshot"
+            print("No snapshot name provided, defaulting to 'snapshot'")
 
-    #vm.CreateSnapshotEx_Task(name=$snapshotName, memory=False)
-    print("hello world")
+        # User Confirmation
+        print("")
+        userConfirm = input("Are you sure you want to create the new '"+snapshotName+"' VM Snapshot? (y/n)")
 
+        # Y/N Prompt
+        loop = True
+        while loop == True:
+            if userConfirm == "y":
+                # Action Item goes here
+                vm.CreateSnapshot_Task(name=snapshotName, memory=False, quiesce=False)
+                print("Snapshot created, task complete!")
+                loop = False
+            elif userConfirm == "n":
+                print("stopping")
+                loop = False
+            # Catch for invalid inputs
+            else:
+                print("Invalid input, please try again")
+
+
+# Function that reverts the VM to its latest working snapshot
 def restoreVMSnapshot(si):
-    # Query list of vms here
+    # Query list of vms available to clone
+    vm = selectVM(si)
 
-    # Ask user if they are sure they want to revert VM to latest snapshot (y/n)
+    # Check if provided vm is valid
+    if str(vm) == 'False':
+        pass
+    else:
+        # User Confirmation
+        print("")
+        userConfirm = input("Are you sure you want to revert the VM to its latest Snapshot? (y/n)")
 
-    # Run task
+        # Y/N Prompt
+        loop = True
+        while loop == True:
+            if userConfirm == "y":
+                # Action Item goes here
+                vm.RevertToCurrentSnapshot_Task()
+                print("Snapshot successfully reverted!")
+                loop = False
+            elif userConfirm == "n":
+                print("stopping")
+                loop = False
+            # Catch for invalid inputs
+            else:
+                print("Invalid input, please try again")
 
-    # Inform user that task is complete
-    
-    print("hello world")
 
+# Function used to modify memory for a given VM
+# Source: https://github.com/vmware/pyvmomi-community-samples/blob/master/samples/create_vm.py
 def cloneVM(si):
     # Query list of vms available to clone
-    print("test")
+    vm = selectVM(si)
 
+    # Check if provided vm is valid
+    if str(vm) == 'False':
+        pass
+    else:
+        # User Confirmation
+        print("")
+        userConfirm = input("Are you sure you want modify the VM Memory Configuration? (y/n)")
+
+        # Y/N Prompt
+        loop = True
+        while loop == True:
+            if userConfirm == "y":
+                # Powers off VM, Sets new memory config, Powers on VM
+                vm.PowerOffVM_Task()
+                newMem = input("Please input a new memory ammount (MB): ")
+                task = vim.vm.ConfigSpec(memoryMB = int(newMem))
+                WaitForTask(vm.Reconfigure(task))
+                vm.PowerOnVM_Task()
+                print("VM config has been updated!")
+                loop = False
+            elif userConfirm == "n":
+                print("stopping")
+                loop = False
+            # Catch for invalid inputs
+            else:
+                print("Invalid input, please try again")
+
+
+# Function used to remove a selected VM
 def removeVM(si):
-    # Query list of vms available to be removed
-    # (The current selected VM is: <VM Name> --> Ask user if they are sure they want to delete the selected vm.
-    print("test")
+    # Query list of vms available to clone
+    vm = selectVM(si)
 
+    # Check if provided vm is valid
+    if str(vm) == 'False':
+        pass
+    else:
+        # User Confirmation
+        print("")
+        userConfirm = input("Are you sure you want delete the selected VM? (y/n)")
 
-def milestone5Menu():
+        # Y/N Prompt
+        loop = True
+        while loop == True:
+            if userConfirm == "y":
+                # Powers off and removes VM
+                vm.PowerOffVM_Task()
+                vm.Destroy_Task()
+                print("VM sucessfully deleted")
+                loop = False
+            elif userConfirm == "n":
+                print("stopping")
+                loop = False
+            # Catch for invalid inputs
+            else:
+                print("Invalid input, please try again")
+    
+
+def milestone5Menu(si):
     menuStatus = True
     while menuStatus == True:
         print("================================")
@@ -101,29 +222,35 @@ def milestone5Menu():
         print("[2] - Power Off VM")
         print("[3] - Take VM Snapshot")
         print("[4] - Restore VM Snapshot")
-        print("[5] - Clone a VM")
+        print("[5] - Configure VM Memory")
         print("[6] - Delete a VM")
         print("[7] - Exit to Main Menu")
         print("")
         selection = input("Please select an option from the menu above: ")
 
         if selection == "1":
-            print("cool test")
+            powerOnVM(si)
+            continue
 
         if selection == "2":
-            print("cool test")
+            powerOffVM(si)
+            continue
         
         if selection == "3":
-            print("cool test")
+            takeVMSnapshot(si)
+            continue
 
         if selection == "4":
-            print("cool test")
+            restoreVMSnapshot(si)
+            continue
 
         if selection == "5":
-            print("cool test")
+            cloneVM(si)
+            continue
 
         if selection == "6":
-            print("cool test")
+            removeVM(si)
+            continue
 
         if selection == "7":
             print("Exiting Script")

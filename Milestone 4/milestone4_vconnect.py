@@ -1,5 +1,4 @@
-# Milestone 4 Vconnect script by Michael Ng, adapted from:
-# https://github.com/rtgillen/SYS350-FA24/
+# Milestone 4 Vconnect script
 
 import getpass
 passw = getpass.getpass()
@@ -138,7 +137,7 @@ def menu():
         continue
 
     if selection == "4":
-      m5.milestone5Menu()
+      m5.milestone5Menu(si)
       continue
 
     if selection == "5":
@@ -151,27 +150,10 @@ def menu():
       continue
 
 # Allows the Menu Script to run on startup
-# if __name__ == "__main__":
-#   menu()
-
-### Testing
-# Test=m5.powerOffVM(si)
-
-test02=m5.selectVM(si)
-
-if str(test02) == 'False':
-  print("task did not complete")
-  pass
-else:
-  test02.PowerOffVM_Task()
-  print(type(test02))
-
-# Test out making this a string comparison if statement
-
-
+menu()
 
 # 4. Expand functionality of part 3 to include metadata on VMs
 #    >> Already included in the "vmInfo" function (*See above for more info)
 
 
-# Also note to self: Shoutout to W3Schools.com --> Very useful resource for referencing how to use python code (am very rusty)
+# Also used W3Schools.com as reference --> Very useful resource for referencing how to use python code syntax
