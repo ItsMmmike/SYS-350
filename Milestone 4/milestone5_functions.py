@@ -44,7 +44,7 @@ def selectVM(si):
         print("VM not found, please try again") 
         return False # Default response if function is unable to locate vm
 
-
+# Useful Resource: https://www.ntpro.nl/blog/archives/3751-Mastering-vCenter-Operations-with-Python-A-Script-to-Manage-Your-VMs.html
 # Function used to power off a selected VM
 def powerOffVM(si):
     # Query list of vms available to clone
