@@ -73,7 +73,7 @@ def vmInfo(si, search=None):
       print("=====")
       print("VM Name: "+ str(vm.name)) # Displays system name
       print("Power State: "+str(vm.runtime.powerState)) # Displays current system power state
-      print("System Memory: "+str(vm.config.hardware.memoryMB)) # Displays number of sys memory in MB
+      print("System Memory: "+str((vm.config.hardware.memoryMB)/1024)) # Displays number of sys memory in MB
       print("CPU Number: "+str(vm.config.hardware.numCPU)) # Displays number of sys CPU cores
       print("IP Address: "+str(vm.guest.ipAddress)) # Displays current IP Address
   
