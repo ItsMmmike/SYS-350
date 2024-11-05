@@ -88,7 +88,7 @@ def vmInfo(si, search=None):
       if vm.name == search:     
         print("VM Name: "+str(vm.name))
         print("Power State: "+str(vm.runtime.powerState))
-        print("System Memory: "+str(vm.config.hardware.memoryMB))
+        print("System Memory: "+str((vm.config.hardware.memoryMB)/1024))
         print("CPU Number: "+str(vm.config.hardware.numCPU))
         print("IP Address: "+str(vm.guest.ipAddress))
         break
