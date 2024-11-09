@@ -150,7 +150,7 @@ def restoreVMSnapshot(si):
 
 # Function used to modify memory for a given VM
 # Source: https://github.com/vmware/pyvmomi-community-samples/blob/master/samples/create_vm.py
-def cloneVM(si):
+def modifyVMMem(si):
     # Query list of vms available to clone
     vm = selectVM(si)
 
@@ -245,7 +245,7 @@ def milestone5Menu(si):
             continue
 
         if selection == "5":
-            cloneVM(si)
+            modifyVMMem(si)
             continue
 
         if selection == "6":
